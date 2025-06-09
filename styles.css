@@ -70,3 +70,8 @@ body.wf-resizing {
   border-radius: 3px;
   padding: 2px 4px !important;
 }
+
+/* doneかつhas-bracketsの場合も左パディングを確保 */
+.done .content.has-brackets {
+  padding-left: 24px !important;
+}
