@@ -1,0 +1,72 @@
+/* リサイズハンドルのスタイル */
+._1bivj9v {
+  position: relative !important;
+}
+
+.wf-resize-handle {
+  position: absolute;
+  right: -5px;
+  top: 0;
+  width: 10px;
+  height: 100%;
+  background-color: transparent;
+  cursor: ew-resize;
+  z-index: 9999;
+}
+
+.wf-resize-handle:hover {
+  background-color: rgba(0, 120, 212, 0.3);
+}
+
+.wf-resize-handle.active {
+  background-color: rgba(0, 120, 212, 0.5);
+}
+
+/* リサイズ中のカーソルスタイルをbodyに適用 */
+body.wf-resizing {
+  cursor: ew-resize !important;
+}
+
+/* doneクラスを含む要素のデフォルトスタイルを無効化 */
+.done {
+  text-decoration: none !important;
+  opacity: 1 !important;
+}
+
+.done * {
+  text-decoration: none !important;
+  opacity: 1 !important;
+}
+
+/* doneクラスを含む要素のテキストを緑色に */
+.done .content {
+  color: #4caf50 !important;
+}
+
+.done .content * {
+  color: #4caf50 !important;
+}
+
+/* contentクラスの要素にチェックアイコンを追加 */
+.done .content {
+  position: relative !important;
+  padding-left: 20px !important;
+}
+
+.done .content::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #4caf50;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+/* スミカッコ【】を含むcontentの背景色 */
+.content.has-brackets {
+  background-color: rgba(128, 128, 128, 0.1) !important;
+  border-radius: 3px;
+  padding: 2px 4px !important;
+}
