@@ -14,6 +14,9 @@ window.addEventListener('load', function() {
   
   // 日付ハイライト機能をセットアップ
   setupDateHighlighting();
+  
+  // フォント設定UIをセットアップ
+  setupFontSettings();
 });
 
 // Cmd+; キーバインド処理の設定
@@ -330,4 +333,168 @@ function highlightDates() {
       timeElement.dataset.daysText = `D${diffDays}`;
     }
   });
+}
+
+// フォント設定UIのセットアップ
+function setupFontSettings() {
+  // 設定パネルを作成
+  createSettingsPanel();
+  
+  // 保存された設定を適用
+  applyStoredFontSettings();
+}
+
+// 設定パネルの作成
+function createSettingsPanel() {
+  // 既に存在する場合は何もしない
+  if (document.getElementById('wf-font-settings')) return;
+  
+  // 設定パネルのHTML
+  const settingsHTML = `
+    <div id="wf-font-settings" class="wf-font-settings-panel">
+      <button id="wf-settings-toggle" class="wf-settings-toggle" title="フォント設定">フォント設定...</button>
+      <div id="wf-settings-content" class="wf-settings-content" style="display: none;">
+        <h3>フォント設定</h3>
+        <div class="wf-setting-item">
+          <label for="wf-font-family">書体:</label>
+          <select id="wf-font-family">
+            <option value="">デフォルト</option>
+            <option value="'Helvetica Neue', Arial, sans-serif">Sans-serif</option>
+            <option value="Georgia, 'Times New Roman', serif">Serif</option>
+            <option value="'Courier New', Consolas, monospace">Monospace</option>
+            <option value="'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif">ヒラギノ角ゴ</option>
+            <option value="'Hiragino Mincho ProN', 'Yu Mincho', serif">ヒラギノ明朝</option>
+            <option value="'Yu Gothic', 'Meiryo', sans-serif">游ゴシック</option>
+            <option value="'Noto Sans JP', sans-serif">Noto Sans JP</option>
+          </select>
+        </div>
+        <div class="wf-setting-item">
+          <label for="wf-font-size">フォントサイズ:</label>
+          <input type="range" id="wf-font-size" min="10" max="24" step="1" value="14">
+          <span id="wf-font-size-value">14px</span>
+        </div>
+        <div class="wf-setting-item">
+          <label for="wf-line-height">行間:</label>
+          <input type="range" id="wf-line-height" min="1.2" max="2.5" step="0.1" value="1.5">
+          <span id="wf-line-height-value">1.5</span>
+        </div>
+        <button id="wf-reset-settings" class="wf-reset-button">デフォルトに戻す</button>
+      </div>
+    </div>
+  `;
+  
+  // パネルを作成してbodyに追加
+  const settingsDiv = document.createElement('div');
+  settingsDiv.innerHTML = settingsHTML;
+  document.body.appendChild(settingsDiv.firstElementChild);
+  
+  // イベントリスナーを設定
+  setupSettingsEventListeners();
+}
+
+// 設定パネルのイベントリスナー
+function setupSettingsEventListeners() {
+  const toggleBtn = document.getElementById('wf-settings-toggle');
+  const settingsContent = document.getElementById('wf-settings-content');
+  const fontFamilySelect = document.getElementById('wf-font-family');
+  const fontSizeSlider = document.getElementById('wf-font-size');
+  const fontSizeValue = document.getElementById('wf-font-size-value');
+  const lineHeightSlider = document.getElementById('wf-line-height');
+  const lineHeightValue = document.getElementById('wf-line-height-value');
+  const resetBtn = document.getElementById('wf-reset-settings');
+  
+  // トグルボタン
+  toggleBtn.addEventListener('click', function() {
+    const isVisible = settingsContent.style.display !== 'none';
+    settingsContent.style.display = isVisible ? 'none' : 'block';
+  });
+  
+  // フォントファミリー選択
+  fontFamilySelect.addEventListener('change', function() {
+    const value = this.value;
+    applyFontSettings(fontSizeSlider.value, lineHeightSlider.value, value);
+    saveFontSettings(fontSizeSlider.value, lineHeightSlider.value, value);
+  });
+  
+  // フォントサイズスライダー
+  fontSizeSlider.addEventListener('input', function() {
+    const value = this.value;
+    fontSizeValue.textContent = value + 'px';
+    applyFontSettings(value, lineHeightSlider.value, fontFamilySelect.value);
+    saveFontSettings(value, lineHeightSlider.value, fontFamilySelect.value);
+  });
+  
+  // 行間スライダー
+  lineHeightSlider.addEventListener('input', function() {
+    const value = this.value;
+    lineHeightValue.textContent = value;
+    applyFontSettings(fontSizeSlider.value, value, fontFamilySelect.value);
+    saveFontSettings(fontSizeSlider.value, value, fontFamilySelect.value);
+  });
+  
+  // リセットボタン
+  resetBtn.addEventListener('click', function() {
+    fontFamilySelect.value = '';
+    fontSizeSlider.value = 14;
+    fontSizeValue.textContent = '14px';
+    lineHeightSlider.value = 1.5;
+    lineHeightValue.textContent = '1.5';
+    applyFontSettings(14, 1.5, '');
+    localStorage.removeItem('wf-font-family');
+    localStorage.removeItem('wf-font-size');
+    localStorage.removeItem('wf-line-height');
+  });
+}
+
+// フォント設定を適用
+function applyFontSettings(fontSize, lineHeight, fontFamily) {
+  // スタイルタグを探すか作成
+  let styleEl = document.getElementById('wf-font-styles');
+  if (!styleEl) {
+    styleEl = document.createElement('style');
+    styleEl.id = 'wf-font-styles';
+    document.head.appendChild(styleEl);
+  }
+  
+  // スタイルを更新
+  const fontFamilyStyle = fontFamily ? `font-family: ${fontFamily} !important;` : '';
+  styleEl.textContent = `
+    .content {
+      font-size: ${fontSize}px !important;
+      line-height: ${lineHeight} !important;
+      ${fontFamilyStyle}
+    }
+  `;
+}
+
+// フォント設定を保存
+function saveFontSettings(fontSize, lineHeight, fontFamily) {
+  localStorage.setItem('wf-font-size', fontSize);
+  localStorage.setItem('wf-line-height', lineHeight);
+  if (fontFamily !== undefined) {
+    localStorage.setItem('wf-font-family', fontFamily);
+  }
+}
+
+// 保存されたフォント設定を適用
+function applyStoredFontSettings() {
+  const storedFontFamily = localStorage.getItem('wf-font-family') || '';
+  const storedFontSize = localStorage.getItem('wf-font-size') || 14;
+  const storedLineHeight = localStorage.getItem('wf-line-height') || 1.5;
+  
+  // UIの値を更新
+  const fontFamilySelect = document.getElementById('wf-font-family');
+  const fontSizeSlider = document.getElementById('wf-font-size');
+  const lineHeightSlider = document.getElementById('wf-line-height');
+  
+  if (fontFamilySelect && fontSizeSlider && lineHeightSlider) {
+    fontFamilySelect.value = storedFontFamily;
+    fontSizeSlider.value = storedFontSize;
+    document.getElementById('wf-font-size-value').textContent = storedFontSize + 'px';
+    lineHeightSlider.value = storedLineHeight;
+    document.getElementById('wf-line-height-value').textContent = storedLineHeight;
+  }
+  
+  // 設定を適用
+  applyFontSettings(storedFontSize, storedLineHeight, storedFontFamily);
 }
