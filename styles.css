@@ -134,3 +134,12 @@ time.monolith-pill[data-days-text]::after {
   font-size: 0.9em;
   color: inherit;
 }
+
+/* x から始まるコンテンツを赤色に */
+.content.has-x-mark {
+  color: #d73a49 !important;
+}
+
+.content.has-x-mark * {
+  color: #d73a49 !important;
+}

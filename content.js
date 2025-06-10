@@ -210,6 +210,21 @@ function highlightBrackets() {
       element.classList.remove('has-brackets');
     }
     
+    // 「x 」から始まるコンテンツの処理
+    if (text.startsWith('x ')) {
+      element.classList.add('has-x-mark');
+      
+      // 「x 」を❌に置き換える
+      const childNodes = Array.from(element.childNodes);
+      childNodes.forEach(node => {
+        if (node.nodeType === Node.TEXT_NODE && node.textContent.startsWith('x ')) {
+          node.textContent = '❌ ' + node.textContent.substring(2);
+        }
+      });
+    } else {
+      element.classList.remove('has-x-mark');
+    }
+    
     // 優先順位タグのクラスを追加
     addPriorityClasses(element);
   });
