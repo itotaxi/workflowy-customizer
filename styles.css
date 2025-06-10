@@ -51,6 +51,7 @@ body.wf-resizing {
 .done .content {
   position: relative !important;
   padding-left: 20px !important;
+  border-left: none !important; /* 優先順位のボーダーを無効化 */
 }
 
 .done .content::before {
@@ -74,4 +75,62 @@ body.wf-resizing {
 /* doneかつhas-bracketsの場合も左パディングを確保 */
 .done .content.has-brackets {
   padding-left: 24px !important;
+}
+
+/* 優先順位を含むコンテンツの左側装飾（doneでない場合のみ適用） */
+/* #p1 - 最高優先度（落ち着いた赤） */
+:not(.done) .content.has-priority-p1 {
+  border-left: 3px solid #d73a49 !important;
+  padding-left: 5px !important;
+}
+
+/* #p2 - 高優先度（落ち着いたオレンジ） */
+:not(.done) .content.has-priority-p2 {
+  border-left: 3px solid #e36209 !important;
+  padding-left: 5px !important;
+}
+
+/* #p3 - 中優先度（落ち着いた黄色） */
+:not(.done) .content.has-priority-p3 {
+  border-left: 3px solid #dbab09 !important;
+  padding-left: 5px !important;
+}
+
+/* #p4 - 低優先度（落ち着いた黄緑） */
+:not(.done) .content.has-priority-p4 {
+  border-left: 3px solid #6f9a3d !important;
+  padding-left: 5px !important;
+}
+
+/* #p5 - 最低優先度（落ち着いた緑） */
+:not(.done) .content.has-priority-p5 {
+  border-left: 3px solid #28a745 !important;
+  padding-left: 5px !important;
+}
+
+/* 日付ハイライトのスタイル */
+/* 期限切れ（過去の日付）- 落ち着いた赤背景 */
+time.monolith-pill.date-overdue .content-wrapper {
+  background-color: #a94442 !important;
+  color: white !important;
+}
+
+/* 今日の期限 - 落ち着いた黄色背景 */
+time.monolith-pill.date-today .content-wrapper {
+  background-color: #d58512 !important;
+  color: white !important;
+}
+
+/* 5日以内の期限 - 落ち着いた緑背景 */
+time.monolith-pill.date-soon .content-wrapper {
+  background-color: #5cb85c !important;
+  color: white !important;
+}
+
+/* 日数表示を疑似要素で追加 */
+time.monolith-pill[data-days-text]::after {
+  content: " - " attr(data-days-text);
+  font-weight: bold;
+  font-size: 0.9em;
+  color: inherit;
 }

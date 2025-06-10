@@ -11,6 +11,9 @@ window.addEventListener('load', function() {
   
   // スミカッコ【】の背景色機能をセットアップ
   setupBracketHighlighting();
+  
+  // 日付ハイライト機能をセットアップ
+  setupDateHighlighting();
 });
 
 // Cmd+; キーバインド処理の設定
@@ -205,6 +208,111 @@ function highlightBrackets() {
       element.classList.add('has-brackets');
     } else {
       element.classList.remove('has-brackets');
+    }
+    
+    // 優先順位タグのクラスを追加
+    addPriorityClasses(element);
+  });
+}
+
+// 優先順位タグのクラスを追加（DOM操作なし）
+function addPriorityClasses(element) {
+  const text = element.textContent || '';
+  
+  // 既存のクラスを削除
+  for (let i = 1; i <= 5; i++) {
+    element.classList.remove(`has-priority-p${i}`);
+  }
+  
+  // doneクラスがある親要素を確認
+  const parentProject = element.closest('.project');
+  if (parentProject && parentProject.classList.contains('done')) {
+    return; // doneの場合は優先順位クラスを追加しない
+  }
+  
+  // #p1〜#p5のパターンをチェック
+  for (let i = 1; i <= 5; i++) {
+    if (text.includes(`#p${i}`)) {
+      element.classList.add(`has-priority-p${i}`);
+      break; // 最初に見つかった優先度のみ適用
+    }
+  }
+}
+
+// 日付ハイライト機能の設定
+function setupDateHighlighting() {
+  // 初期化時に処理
+  highlightDates();
+  
+  // DOM変更を監視
+  const observer = new MutationObserver(function(mutations) {
+    highlightDates();
+  });
+  
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+    characterData: true
+  });
+  
+  // 定期的にチェック（日付が変わった時のため）
+  setInterval(highlightDates, 60000); // 1分ごと
+}
+
+// 日付をハイライトする関数
+function highlightDates() {
+  const timeElements = document.querySelectorAll('time.monolith-pill');
+  
+  timeElements.forEach(timeElement => {
+    // 既に処理済みかチェック
+    if (timeElement.dataset.dateProcessed === 'true') return;
+    
+    // 親の.content要素を確認
+    const parentContent = timeElement.closest('.content');
+    if (!parentContent) return;
+    
+    // .content内のテキストノードと要素をチェック
+    const contentText = parentContent.textContent.trim();
+    const timeText = timeElement.textContent.trim();
+    
+    // timeElementのテキストがcontentのテキスト全体と一致する場合（日付単体）はスキップ
+    if (contentText === timeText) {
+      timeElement.dataset.dateProcessed = 'true'; // 処理済みフラグは設定
+      return;
+    }
+    
+    // 日付情報を取得
+    const startYear = parseInt(timeElement.getAttribute('startyear'));
+    const startMonth = parseInt(timeElement.getAttribute('startmonth'));
+    const startDay = parseInt(timeElement.getAttribute('startday'));
+    
+    if (isNaN(startYear) || isNaN(startMonth) || isNaN(startDay)) return;
+    
+    // 日付オブジェクトを作成（月は0ベースなので-1）
+    const targetDate = new Date(startYear, startMonth - 1, startDay);
+    targetDate.setHours(0, 0, 0, 0); // 時間をリセット
+    
+    // 今日の日付を取得
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // 時間をリセット
+    
+    // 日数差を計算
+    const diffTime = targetDate - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    // 処理済みフラグを設定
+    timeElement.dataset.dateProcessed = 'true';
+    
+    // 日数に応じてクラスを追加
+    if (diffDays < 0) {
+      timeElement.classList.add('date-overdue');
+      // 超過した場合は日数表示なし
+    } else if (diffDays === 0) {
+      timeElement.classList.add('date-today');
+      timeElement.dataset.daysText = 'D0';
+    } else if (diffDays <= 5) {
+      timeElement.classList.add('date-soon');
+      timeElement.dataset.daysText = `D${diffDays}`;
     }
   });
 }
