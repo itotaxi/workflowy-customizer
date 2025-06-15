@@ -88,34 +88,34 @@ body.wf-resizing {
   padding-left: 24px !important;
 }
 
-/* 優先順位を含むコンテンツの左側装飾（doneでない場合のみ適用） */
+/* 優先順位を含むコンテンツの背景グラデーション */
 /* #p1 - 最高優先度（落ち着いた赤） */
-:not(.done) .content.has-priority-p1 {
-  border-left: 3px solid #d73a49 !important;
+.content.has-priority-p1 {
+  background: linear-gradient(to right, rgba(215, 58, 73, 0.15) 0%, rgba(215, 58, 73, 0.05) 50%, transparent 100%) !important;
   padding-left: 5px !important;
 }
 
 /* #p2 - 高優先度（落ち着いたオレンジ） */
-:not(.done) .content.has-priority-p2 {
-  border-left: 3px solid #e36209 !important;
+.content.has-priority-p2 {
+  background: linear-gradient(to right, rgba(227, 98, 9, 0.15) 0%, rgba(227, 98, 9, 0.05) 50%, transparent 100%) !important;
   padding-left: 5px !important;
 }
 
 /* #p3 - 中優先度（落ち着いた黄色） */
-:not(.done) .content.has-priority-p3 {
-  border-left: 3px solid #dbab09 !important;
+.content.has-priority-p3 {
+  background: linear-gradient(to right, rgba(219, 171, 9, 0.15) 0%, rgba(219, 171, 9, 0.05) 50%, transparent 100%) !important;
   padding-left: 5px !important;
 }
 
 /* #p4 - 低優先度（落ち着いた黄緑） */
-:not(.done) .content.has-priority-p4 {
-  border-left: 3px solid #6f9a3d !important;
+.content.has-priority-p4 {
+  background: linear-gradient(to right, rgba(111, 154, 61, 0.15) 0%, rgba(111, 154, 61, 0.05) 50%, transparent 100%) !important;
   padding-left: 5px !important;
 }
 
 /* #p5 - 最低優先度（落ち着いた緑） */
-:not(.done) .content.has-priority-p5 {
-  border-left: 3px solid #28a745 !important;
+.content.has-priority-p5 {
+  background: linear-gradient(to right, rgba(40, 167, 69, 0.15) 0%, rgba(40, 167, 69, 0.05) 50%, transparent 100%) !important;
   padding-left: 5px !important;
 }
 

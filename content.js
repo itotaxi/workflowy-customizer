@@ -20,6 +20,12 @@ window.addEventListener('load', function() {
   
   // カテゴリハイライト機能をセットアップ
   setupCategoryHighlighting();
+  
+  // 遅延実行で確実に適用
+  setTimeout(() => {
+    highlightBrackets();
+    highlightCategories();
+  }, 1000);
 });
 
 // Cmd+; キーバインド処理の設定
@@ -234,9 +240,16 @@ function highlightBrackets() {
     // 優先順位タグのクラスを追加
     addPriorityClasses(element);
   });
+  
+  // 少し遅延してから再度実行（動的に追加される要素のため）
+  setTimeout(() => {
+    document.querySelectorAll('.content').forEach(element => {
+      addPriorityClasses(element);
+    });
+  }, 100);
 }
 
-// 優先順位タグのクラスを追加（DOM操作なし）
+// 優先順位タグのハイライト処理（DOM操作なし）
 function addPriorityClasses(element) {
   const text = element.textContent || '';
   
@@ -248,10 +261,10 @@ function addPriorityClasses(element) {
   // doneクラスがある親要素を確認
   const parentProject = element.closest('.project');
   if (parentProject && parentProject.classList.contains('done')) {
-    return; // doneの場合は優先順位クラスを追加しない
+    return; // doneの場合は優先順位処理をしない
   }
   
-  // #p1〜#p5のパターンをチェック
+  // #p1〜#p5のパターンをチェック（DOM操作なし、クラスのみ追加）
   for (let i = 1; i <= 5; i++) {
     if (text.includes(`#p${i}`)) {
       element.classList.add(`has-priority-p${i}`);
