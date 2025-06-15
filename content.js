@@ -17,6 +17,9 @@ window.addEventListener('load', function() {
   
   // フォント設定UIをセットアップ
   setupFontSettings();
+  
+  // カテゴリハイライト機能をセットアップ
+  setupCategoryHighlighting();
 });
 
 // Cmd+; キーバインド処理の設定
@@ -497,4 +500,95 @@ function applyStoredFontSettings() {
   
   // 設定を適用
   applyFontSettings(storedFontSize, storedLineHeight, storedFontFamily);
+}
+
+// カテゴリハイライト機能のセットアップ
+function setupCategoryHighlighting() {
+  // 初期化時に処理
+  highlightCategories();
+  
+  // DOM変更を監視
+  const observer = new MutationObserver(function(mutations) {
+    highlightCategories();
+  });
+  
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+    characterData: true
+  });
+}
+
+// カテゴリのカラーマップ（固定色）
+const categoryColors = [
+  '#3498db', // 青
+  '#e74c3c', // 赤
+  '#2ecc71', // 緑
+  '#f39c12', // オレンジ
+  '#9b59b6', // 紫
+  '#1abc9c', // ターコイズ
+  '#34495e', // ダークグレー
+  '#16a085', // ダークターコイズ
+  '#27ae60', // ダーク緑
+  '#2980b9', // ダーク青
+  '#8e44ad', // ダーク紫
+  '#c0392b', // ダーク赤
+  '#d35400', // ダークオレンジ
+  '#7f8c8d', // グレー
+  '#2c3e50'  // ダークブルーグレー
+];
+
+// カテゴリと色のマッピングを保存
+const categoryColorMap = new Map();
+let nextColorIndex = 0;
+
+// カテゴリをハイライトする関数
+function highlightCategories() {
+  const contentElements = document.querySelectorAll('.content');
+  
+  contentElements.forEach(element => {
+    // doneクラスがある親要素を確認
+    const parentProject = element.closest('.project');
+    if (parentProject && parentProject.classList.contains('done')) {
+      // doneの場合はカテゴリ処理をスキップ
+      element.classList.remove('has-category');
+      delete element.dataset.category;
+      delete element.dataset.categoryColor;
+      element.style.removeProperty('--category-color');
+      return;
+    }
+    
+    const text = element.textContent || '';
+    
+    // 「xxx: 」パターンを検索（xxxは非空白文字の連続）
+    const categoryMatch = text.match(/^([^\s:]+):\s/);
+    
+    if (categoryMatch) {
+      const category = categoryMatch[1];
+      
+      // カテゴリに色が割り当てられていない場合は新しい色を割り当て
+      if (!categoryColorMap.has(category)) {
+        categoryColorMap.set(category, categoryColors[nextColorIndex % categoryColors.length]);
+        nextColorIndex++;
+      }
+      
+      const color = categoryColorMap.get(category);
+      
+      // データ属性としてカテゴリを設定
+      element.dataset.category = category;
+      element.dataset.categoryColor = color;
+      
+      // カテゴリクラスを追加
+      element.classList.add('has-category');
+      
+      // インラインスタイルで色を設定（CSS変数が効かない場合のため）
+      element.style.setProperty('--category-color', color);
+    } else {
+      // カテゴリがない場合はクラスとデータ属性を削除
+      element.classList.remove('has-category');
+      delete element.dataset.category;
+      delete element.dataset.categoryColor;
+      element.style.removeProperty('--category-color');
+    }
+  });
 }

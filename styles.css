@@ -65,6 +65,17 @@ body.wf-resizing {
   font-size: 16px;
 }
 
+/* doneクラスの場合はカテゴリ表示を無効化 */
+.done .content.has-category {
+  padding-left: 20px !important; /* チェックアイコン用のパディングを維持 */
+}
+
+.done .content.has-category::before {
+  content: "✓"; /* チェックアイコンを優先 */
+  background-color: transparent; /* カテゴリバーを非表示 */
+  width: auto;
+}
+
 /* スミカッコ【】を含むcontentの背景色 */
 .content.has-brackets {
   background-color: rgba(128, 128, 128, 0.1) !important;
@@ -232,4 +243,26 @@ time.monolith-pill[data-days-text]::after {
 
 .wf-reset-button:hover {
   background-color: #ccc;
+}
+
+/* カテゴリハイライトのスタイル */
+.content.has-category {
+  position: relative;
+  padding-left: 12px !important;
+}
+
+.content.has-category::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background-color: var(--category-color);
+  border-radius: 2px;
+}
+
+/* カテゴリごとに動的に色を適用 */
+.content.has-category[data-category-color] {
+  --category-color: attr(data-category-color);
 }
